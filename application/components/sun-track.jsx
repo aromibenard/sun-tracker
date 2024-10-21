@@ -66,6 +66,8 @@ export default function SunTracker() {
   const [isDaytime, setIsDayTime] = useState(true)
   const [sunrise, setSunRise] = useState(null)
   const [sunset, setSunSet] = useState(null)
+  const [clientSunrise, setClientSunrise] = useState(null)
+  const [clientSunset, setClientSunset] = useState(null)
 
   const generateCloud = (position, size) => (
     <g
@@ -131,6 +133,8 @@ export default function SunTracker() {
         sunset = sunset ? parseTimeString(sunset) : null
         setSunRise(sunrise)
         setSunSet(sunset)
+        setClientSunrise(formatTime(sunrise));
+        setClientSunset(formatTime(sunset))
       }
     }
     fetchData()    
@@ -236,8 +240,8 @@ export default function SunTracker() {
         )}
  
         {/* Sunrise and sunset labels */}
-        <text x="180" y="320" className=" fill-slate-800 font-medium">Sunrise: {formatTime(sunrise)}</text>
-        <text x="700" y="320" className=" fill-slate-800 font-medium">Sunset: {formatTime(sunset)}</text>
+        <text x="180" y="320" className=" fill-slate-800 font-medium">Sunrise: {clientSunrise}</text>
+        <text x="700" y="320" className=" fill-slate-800 font-medium">Sunset: {clientSunset}</text>
 
         {/* Current Time Label */}
         <text
