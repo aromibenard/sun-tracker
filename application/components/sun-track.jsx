@@ -61,13 +61,25 @@ function formatTime(isoString) {
   return `${hours}:${minutes}`
 }
 
-
 export default function SunTracker() {
   const [sunPosition, setSunPosition] = useState(0)
   const [isDaytime, setIsDayTime] = useState(true)
   const [sunrise, setSunRise] = useState(null)
   const [sunset, setSunSet] = useState(null)
 
+  const generateCloud = (position, size) => (
+    <g
+      transform={`translate(${200 + position * 5}, ${
+        300 - Math.sin((position / 100) * Math.PI) * 200
+      })`}
+    >
+      {/* Cloud shapes using circles */}
+      <circle cx="20" cy="30" r={size * 0.2} fill="white" />
+      <circle cx="50" cy="20" r={size * 0.3} fill="white" />
+      <circle cx="80" cy="30" r={size * 0.25} fill="white" />
+      <circle cx="50" cy="40" r={size * 0.35} fill="white" />
+    </g>
+  )
 
   const updateSunPosition = useCallback (() => {
     if (!sunrise || !sunset) return
@@ -126,7 +138,7 @@ export default function SunTracker() {
 
   useEffect(() => {
     if (sunrise && sunset) {
-      const interval = setInterval(updateSunPosition, 2000)
+      const interval = setInterval(updateSunPosition, 3500)
       return () => clearInterval(interval)
     }
   }, [sunrise, sunset, updateSunPosition])
@@ -147,7 +159,7 @@ export default function SunTracker() {
         <defs>
           <radialGradient id="sunGradient" cx="50%" cy="50%" r="50%">
             <stop offset="0%" style={{ stopColor: 'yellow', stopOpacity: 1 }} />
-            <stop offset="100%" style={{ stopColor: 'orange', stopOpacity: 0.6 }} />
+            <stop offset="100%" style={{ stopColor: 'orange', stopOpacity: 0.3 }} />
           </radialGradient>
         </defs>
 
@@ -159,11 +171,26 @@ export default function SunTracker() {
           </radialGradient>
         </defs>
 
+        {/*sun shadow */}
+        <defs>
+          <filter id="sunShadow" x="-50%" y="-50%" width="200%" height="200%">
+            <feDropShadow dx="4" dy="4" stdDeviation="10" floodColor="rgba(0,0,0,0.5)" />
+          </filter>
+        </defs>
+
+        {/*sun core */}
+        <defs>
+          <radialGradient id="sunCore" cx="50%" cy="50%" r="50%">
+            <stop offset="0%" style={{ stopColor: '#FFFFE0', stopOpacity: 1 }} />
+            <stop offset="100%" style={{ stopColor: '#FFD700', stopOpacity: 1 }} />
+          </radialGradient>
+        </defs>
+
         {/* Sky background */}
         <rect width="100%" height="100%" fill="url(#skyGradient)" />
 
         {/* Ground/Horizon */}
-        <rect x="0" y="300" width="100%" height="100" fill="#2E7D32" />
+        <rect x="0" y="300" width="100%" height="100" fill="#39FF14" />
 
          {/* Stars */}
          {!isDaytime && (
@@ -176,38 +203,46 @@ export default function SunTracker() {
           </>
         )}
 
-        <Cloud/>
-
         {/* Sun or Moon */}
         {isDaytime ? (
-          <circle
-            cx={`${50 + (sunPosition * 5)}`}
-            cy={300 - (200 * (sunPosition / 100))} //arching curve
-            r="25"
-            fill="url(#sunGradient)"
-            stroke="orange"
-            strokeWidth="6"
-          />
+          <g>
+            <circle
+              cx={`${200 + (sunPosition * 5)}`}
+              cy={300 - Math.sin((sunPosition / 100) * Math.PI ) * 200} //arching curve
+              r="25"
+              fill="url(#sunGradient)"
+              stroke="orange"
+              strokeWidth="6"
+              filter="url(#sunShadow)"
+            />
+
+            <circle
+              cx={`${200 + (sunPosition * 5)}`}
+              cy={300 - Math.sin((sunPosition / 100) * Math.PI ) * 200}
+              r="30"
+              fill="url(#sunCore)"
+            />
+          </g>
         ) : (
-          // Show moon 
+          // moon 
           <circle
-            cx={`${50 + (sunPosition * 5)}`}
-            cy={300 - (200 * (sunPosition / 100))} // Moon curve
+            cx={`${200 + (sunPosition * 5)}`}
+            cy={300 - Math.sin((sunPosition / 100) * Math.PI ) * 200} // Moon curve
             r="20"
             fill="url(#moonGradient)"
             stroke="gray"
             strokeWidth="3"
           />
         )}
-
+ 
         {/* Sunrise and sunset labels */}
-        <text x="50" y="320" className=" fill-white">Sunrise: {formatTime(sunrise)}</text>
-        <text x="500" y="320" className=" fill-white">Sunset: {formatTime(sunset)}</text>
+        <text x="180" y="320" className=" fill-slate-800 font-medium">Sunrise: {formatTime(sunrise)}</text>
+        <text x="700" y="320" className=" fill-slate-800 font-medium">Sunset: {formatTime(sunset)}</text>
 
         {/* Current Time Label */}
         <text
-          x={`${50 + (sunPosition * 5)}`}
-          y={300 - (200 * (sunPosition / 100)) - 30} // Above the sun/moon
+          x={`${200 + (sunPosition * 5)}`}
+          y={300 - Math.sin((sunPosition / 100) * Math.PI) * 200 - 34}// Above the sun/moon
           fontSize="14"
           fill="white"
           textAnchor="middle"
