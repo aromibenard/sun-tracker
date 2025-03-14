@@ -1,6 +1,7 @@
 # Sun Tracker
 
 Tracks the sun from sunrise to sunset and vice versa for the moon 🌝 
+[View the production build here](sun-tracker.vercel.app)
 
 ## Description
 
@@ -31,7 +32,7 @@ This is just an idea I had, to show what percentage of day has passed, relative 
 
 ## Usage
 
-Open your browser on localhost:3000 to view the application.
+[Open your browser on (localhost:3000) to view the application.]
 
 ## Contributing
 
